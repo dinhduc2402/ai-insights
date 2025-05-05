@@ -1,0 +1,36 @@
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+env/
+venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.gitignore
+.vscode
+README.md
+
+# Frontend specific
+frontend/node_modules
+frontend/.next
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.env.local # Don't copy local secrets into image
+frontend/build # if using create-react-app style build folder
+
+# Backend specific
+backend/.venv # ignore virtual env if created locally
+
+.env

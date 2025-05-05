@@ -6,6 +6,9 @@ from .config.settings import settings
 from .controllers.file_controller import router as file_router
 from .controllers.assistant_controller import router as assistant_router
 from .controllers.ai_controller import router as ai_router
+from .controllers.user_controller import router as user_router
+from .controllers.job_controller import router as job_router
+from .controllers.workspace_controller import router as workspace_router
 
 # --- Langchain Basic Import Test ---
 try:
@@ -65,3 +68,6 @@ async def test_langchain_integration():
 app.include_router(file_router, prefix="/api/files", tags=["Files"])
 app.include_router(assistant_router, prefix="/api/assistant", tags=["Assistant"])
 app.include_router(ai_router, prefix="/api/ai", tags=["AI Processing"])
+app.include_router(user_router, prefix="/api/users", tags=["Users"])
+app.include_router(job_router, prefix="/api/jobs", tags=["Jobs"])
+app.include_router(workspace_router, prefix="/api/workspaces", tags=["Workspaces"])

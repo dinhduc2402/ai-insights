@@ -1,9 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+import uuid
 
 class AITextRequest(BaseModel):
     text: str
+    workspace_id: str
     model: Optional[str] = "gpt-4"  # Default to GPT-4
     temperature: Optional[float] = 0.7
 
