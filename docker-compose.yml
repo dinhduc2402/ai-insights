@@ -1,0 +1,53 @@
+# your-project-root/docker-compose.yml
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the application code directory for hot-reloading
+      - ./backend/app:/code/app
+      # You might mount other volumes if needed (e.g., for persistent data)
+    # --- ADD THIS env_file SECTION ---
+    # Load environment variables from the .env file located in the project root
+    env_file:
+      - .env
+    # --- END ADD ---
+    environment:
+      # You can still define non-secret variables here if needed
+      # These will override variables with the same name from the .env file
+      - FRONTEND_URL=http://localhost:3000 # Example: Still useful here
+    container_name: backend # Optional: Custom container name
+    # Optional: Add restart policy
+    # restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      # target: production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      # Prevent host node_modules from overwriting container's node_modules
+      - /app/node_modules
+      # Persist Next.js build cache
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend # Ensures backend starts before frontend
+    container_name: frontend
+    # restart: unless-stopped
+
+# Optional: Define named volumes if you prefer them over anonymous volumes
+# volumes:
+#   frontend_node_modules:
+#   frontend_next_cache:
+
