@@ -26,3 +26,9 @@ pinecone>=2.2.4
 
 # OpenAI
 openai>=1.0.0
+
+# Password hashing
+passlib[bcrypt]>=1.7.4
+
+# SQLAlchemy and asyncpg for PostgreSQL
+psycopg2-binary>=2.9.0

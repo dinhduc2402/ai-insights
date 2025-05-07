@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 from ..models.workspace import WorkspaceStatus
@@ -6,7 +6,9 @@ from ..models.workspace import WorkspaceStatus
 class WorkspaceBase(BaseModel):
     name: str
     description: Optional[str] = None
-    workspace_id: str
+    workspace_id: Optional[str] = None
+    user_id: Optional[str] = None
+    status: WorkspaceStatus = WorkspaceStatus.ACTIVE
 
 class WorkspaceCreate(WorkspaceBase):
     pass
@@ -14,18 +16,12 @@ class WorkspaceCreate(WorkspaceBase):
 class WorkspaceUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    status: Optional[WorkspaceStatus]
-    result: Optional[str] = None
-    error: Optional[str] = None
+    status: Optional[WorkspaceStatus] = None
 
 class WorkspaceInDB(WorkspaceBase):
-    id: str
-    status: WorkspaceStatus
-    result: Optional[str] = None
-    error: Optional[str] = None
+    id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
-    user_id: str
 
     class Config:
-        from_attributes = True 
+        from_attributes = True  # Updated from orm_mode to from_attributes

@@ -4,7 +4,7 @@ from ..services.r2_service import r2_service
 from ..services.file_processing_service import file_processing_service
 from ..schemas.file import FileResponse, FileProcessRequest, FileProcessResponse
 
-router = APIRouter(prefix="/api/v1")
+router = APIRouter()
 
 @router.post("/workspaces/{workspace_name}/files", response_model=FileResponse, status_code=201)
 async def upload_file(

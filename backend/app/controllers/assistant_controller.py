@@ -6,7 +6,7 @@ from ..services.file_processing_service import file_processing_service
 import logging
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/assistant", tags=["Assistant"])
+router = APIRouter()
 
 class QueryRequest(BaseModel):
     prompt: str

@@ -3,29 +3,37 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config.settings import settings
 import logging
+from typing import Generator
 
 logger = logging.getLogger(__name__)
 
-try:
-    # Create SQLAlchemy engine
-    engine = create_engine(
-        settings.DATABASE_URL,
-        pool_pre_ping=True,
-        pool_size=5,
-        max_overflow=10,
-        connect_args={
-            "connect_timeout": 10
-        }
-    )
-
-    # Test the connection
-    engine.connect()
-    logger.info("Database connection established successfully")
-
-except Exception as e:
-    logger.error(f"Failed to connect to database: {str(e)}")
-    # Create a null engine for development/testing
-    logger.warning("Using in-memory SQLite database for development")
+# PostgreSQL connection settings
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+if SQLALCHEMY_DATABASE_URL.startswith('postgresql'):
+    try:
+        # Create PostgreSQL engine with appropriate settings
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL,
+            pool_pre_ping=True,  # Enable automatic reconnection
+            pool_size=5,         # Maximum number of connections in the pool
+            max_overflow=10,     # Maximum number of connections that can be created beyond pool_size
+            pool_timeout=30,     # Timeout for getting connection from pool
+            connect_args={
+                "connect_timeout": 10,  # Connection timeout in seconds
+                "application_name": "ai-insights"  # Application identifier in PostgreSQL
+            }
+        )
+        
+        # Test the connection
+        engine.connect()
+        logger.info("Successfully connected to PostgreSQL database")
+        
+    except Exception as e:
+        logger.error(f"Failed to connect to PostgreSQL: {str(e)}")
+        raise
+else:
+    logger.error("Invalid DATABASE_URL: Must start with 'postgresql'")
+    raise ValueError("Database URL must be a PostgreSQL connection string")
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -33,10 +41,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Create base class for models
 Base = declarative_base()
 
-# Dependency to get DB session
-def get_db():
+def get_db() -> Generator:
+    """
+    Dependency function to get database session
+    """
     db = SessionLocal()
     try:
         yield db
     finally:
-        db.close() 
+        db.close()

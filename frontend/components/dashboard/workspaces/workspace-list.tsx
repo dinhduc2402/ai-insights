@@ -37,6 +37,7 @@ export function WorkspaceList() {
           try {
                setIsLoading(true)
                const response = await api.get<ApiResponse>("/api/workspaces")
+
                setWorkspaces(response.data.data)
           } catch (error) {
                console.error("Error loading workspaces:", error)

@@ -11,6 +11,7 @@ class WorkspaceStatus(str, enum.Enum):
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
+    ACTIVE = "active"
 
 class Workspace(Base):
     __tablename__ = "workspaces"
