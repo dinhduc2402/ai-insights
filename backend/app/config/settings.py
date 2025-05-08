@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     # OpenAI Settings
     OPENAI_API_KEY: Optional[str] = None
     
+    # Anthropic Settings
+    ANTHROPIC_API_KEY: Optional[str] = None
+    
     class Config:
         case_sensitive = True
         env_file = ".env"

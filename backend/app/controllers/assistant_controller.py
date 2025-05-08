@@ -1,56 +1,73 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
-from typing import Optional
+from fastapi import APIRouter, HTTPException, status, Request, Response
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from ..services.assistant_service import assistant_service
-from ..services.file_processing_service import file_processing_service
 import logging
+import json
+import asyncio
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 class QueryRequest(BaseModel):
+    id: str
     prompt: str
+    model: str = "gpt-3.5-turbo"  # Default model
+    stream: bool = False
 
-@router.post("/upload/{workspace_name}")
-async def upload_to_workspace(
-    workspace_name: str,
-    file: UploadFile = File(...),
-    prompt: Optional[str] = None
-):
-    """
-    Upload a file to a workspace and process it with an optional prompt
-    """
+async def event_generator(workspace_id: str, request: QueryRequest):
+    """Generate SSE events for streaming responses"""
     try:
-        # Process the file
-        await file_processing_service.process_file(workspace_name, file.filename)
+        # Start the streaming process
+        yield f"data: {json.dumps({'type': 'start', 'id': request.id})}\n\n"
         
-        # If prompt is provided, process it with the assistant
-        if prompt:
-            response = await assistant_service.process_prompt(workspace_name, prompt)
-            return {
-                "message": "File uploaded and processed successfully",
-                "assistant_response": response
-            }
+        # Get streaming response
+        async for chunk in assistant_service.process_prompt_stream(
+            workspace_id=workspace_id, 
+            prompt=request.prompt,
+            model=request.model
+        ):
+            if isinstance(chunk, dict):
+                # Format as SSE event
+                yield f"data: {json.dumps({'type': 'chunk', 'id': request.id, 'content': chunk})}\n\n"
+            else:
+                # Plain text chunk
+                yield f"data: {json.dumps({'type': 'chunk', 'id': request.id, 'content': {'text': chunk}})}\n\n"
+            
+            # Small delay to prevent overwhelming the client
+            await asyncio.sleep(0.01)
         
-        return {"message": "File uploaded successfully"}
+        # Signal completion
+        yield f"data: {json.dumps({'type': 'end', 'id': request.id})}\n\n"
+            
     except Exception as e:
-        logger.error(f"Error processing file: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+        logger.error(f"Error in streaming: {str(e)}", exc_info=True)
+        error_json = json.dumps({'type': 'error', 'id': request.id, 'error': str(e)})
+        yield f"data: {error_json}\n\n"
 
-@router.post("/query/{workspace_name}")
+@router.post("/{workspace_id}")
 async def query_workspace(
-    workspace_name: str,
-    request: QueryRequest
+    workspace_id: str,
+    request: QueryRequest,
 ):
     """
-    Query a workspace with a prompt
+    Query a workspace with a prompt, with optional streaming response
     """
     try:
-        response = await assistant_service.process_prompt(workspace_name, request.prompt)
-        return {"response": response}
+        # Handle streaming request
+        if request.stream:
+            return StreamingResponse(
+                event_generator(workspace_id, request),
+                media_type="text/event-stream"
+            )
+        
+        # Handle regular request
+        response = await assistant_service.process_prompt(
+            workspace_id=workspace_id, 
+            prompt=request.prompt,
+            model=request.model
+        )
+        return {"id": request.id, "response": response}
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}", exc_info=True)
         raise HTTPException(

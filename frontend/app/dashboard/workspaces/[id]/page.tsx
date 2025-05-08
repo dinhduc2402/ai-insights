@@ -1,15 +1,16 @@
 "use client"
 import React from 'react';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { api } from "@/lib/api";
-import { Bell, ChevronDown, MoreHorizontal, SendIcon } from "lucide-react"
+import { Bell, ChevronDown, MoreHorizontal, PaperclipIcon, SendIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import AttachmentsList from "@/components/workspace/AttachmentsList";
 import FileUploader from "@/components/workspace/FileUploader";
+import { PromptEditDialog } from "@/components/workspace/PromptEditDialog"
 import { user_id } from '@/utils/data';
 
 const WorkspacePage = () => {
@@ -19,10 +20,13 @@ const WorkspacePage = () => {
      const [isLoading, setIsLoading] = useState(true);
 
      const [activeTab, setActiveTab] = useState("attachments")
+     const [refreshKey, setRefreshKey] = useState(0)
      const [conversations, setConversations] = useState<{ id: string; text: string; timestamp: string }[]>([])
      const [inputMessage, setInputMessage] = useState("")
      const [selectedModel, setSelectedModel] = useState("Grok 3")
      const [selectedTool, setSelectedTool] = useState("DeepSearch")
+     const [textareaHeight, setTextareaHeight] = useState("56px"); // min-h-14 is 56px
+     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
      const handleSendMessage = () => {
           if (inputMessage.trim()) {
@@ -33,9 +37,26 @@ const WorkspacePage = () => {
                }
                setConversations([...conversations, newConversation])
                setInputMessage("")
+               setTextareaHeight("56px") // Reset height after sending
                setActiveTab("conversations") // Switch to conversations tab
           }
      }
+
+     const handlePromptSave = (updatedContent: string) => {
+          setInputMessage(updatedContent);
+          // Update height based on new content
+          if (updatedContent.length > 500) {
+               setTextareaHeight("350px");
+          } else {
+               // Auto-size for shorter content
+               if (textareaRef.current) {
+                    textareaRef.current.style.height = "56px"; // Reset to calculate properly
+                    const scrollHeight = textareaRef.current.scrollHeight;
+                    const newHeight = Math.min(scrollHeight, 350); // Cap at 350px
+                    setTextareaHeight(`${newHeight}px`);
+               }
+          }
+     };
 
      const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
           if (e.key === "Enter" && !e.shiftKey) {
@@ -101,12 +122,13 @@ const WorkspacePage = () => {
                          <div className="bg-gray-50 rounded-3xl border border-gray-200 mb-6">
                               <div className="p-4">
                                    <textarea
+                                        ref={textareaRef}
                                         placeholder="Start a conversation in this workspace"
-                                        className="w-full bg-transparent text-gray-700 mb-4 outline-none px-2 @[480px]/input:px-3 focus:outline-none text-fg-primary align-bottom min-h-14 max-h-[350px] pt-5 my-0 resize-y overflow-auto"
+                                        className="w-full bg-transparent text-gray-700 mb-4 outline-none px-2 @[480px]/input:px-3 focus:outline-none text-fg-primary align-bottom pt-5 my-0 overflow-auto"
+                                        style={{ height: textareaHeight, minHeight: "56px", maxHeight: "350px" }}
                                         value={inputMessage}
                                         onChange={(e) => setInputMessage(e.target.value)}
                                         onKeyDownCapture={handleKeyDown}
-                                        rows={2}
                                    />
                                    <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
@@ -139,6 +161,10 @@ const WorkspacePage = () => {
                                                        </div>
                                                   </PopoverContent>
                                              </Popover>
+                                             <PromptEditDialog
+                                                  content={inputMessage}
+                                                  onSave={handlePromptSave}
+                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
                                              <Popover>
@@ -213,13 +239,17 @@ const WorkspacePage = () => {
                                         <FileUploader
                                              workspaceId={workspaceId}
                                              userId={user_id}
-                                             onUploadSuccess={() => setActiveTab("attachments")}
+                                             onUploadSuccess={() => {
+                                                  setActiveTab("attachments");
+                                                  setRefreshKey(prev => prev + 1); // Force attachment list to refresh
+                                             }}
                                         />
                                    </div>
                                    <TabsContent value="attachments" className="mt-4 flex-1">
                                         <AttachmentsList
                                              workspaceId={workspaceId}
                                              onRefresh={() => setActiveTab("attachments")}
+                                             key={refreshKey}
                                         />
                                    </TabsContent>
                                    <TabsContent value="conversations" className="mt-4 flex-1">

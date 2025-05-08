@@ -69,4 +69,4 @@ async def test_langchain_integration():
 # app.include_router(user_router, prefix="/api/users", tags=["Users"])
 app.include_router(workspace_router, prefix="/api/workspaces", tags=["Workspaces"])
 app.include_router(file_router, prefix="/api/files", tags=["Files"])
-app.include_router(assistant_router, prefix="/api/assistant", tags=["Assistant"])
+app.include_router(assistant_router, prefix="/api/chat", tags=["Chat"])
