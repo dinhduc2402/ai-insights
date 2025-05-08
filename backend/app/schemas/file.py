@@ -27,7 +27,6 @@ class FileResponse(BaseModel):
     content_type: Optional[str] = None
     file_size: int
     workspace_id: str
-    job_id: Optional[str] = None
     created_at: datetime
 
 class FileProcessRequest(BaseModel):
