@@ -14,4 +14,4 @@ class File(Base):
     content_type = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     workspace_id = Column(String(36), ForeignKey("workspaces.id"), nullable=False)
-    user_id = Column(String(36), ForeignKey("users.id"), nullable=False) 
+    user_id = Column(String(36), nullable=False) 

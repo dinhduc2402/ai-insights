@@ -8,6 +8,7 @@ from ..database import get_db
 from ..models.file import File as FileModel
 import uuid
 import logging
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -33,42 +34,34 @@ async def upload_file(
             logger.debug("No file provided")
             raise HTTPException(status_code=400, detail="No file provided")
 
-        # 1. Upload to R2
+        # Read file content first before any operations
+        file_content = await file.read()
+        file_size = len(file_content)
+
+        # 1. Upload to R2 (create a new bytes object from content)
+        file_bytes = io.BytesIO(file_content)
         result = await r2_service.upload_file(
-            file_obj=file.file,
+            file_obj=file_bytes,
             workspace_name=workspace_id,
             filename=file.filename
         )
-        logger.debug(f"File uploaded to R2 with key: {result['stored_key']}")
+            
+        # 2. Save file metadata to PostgreSQL using the service function
+        file_data = {
+            'filename': file.filename,
+            'file_path': result["stored_key"],
+            'file_size': file_size,
+            'content_type': file.content_type,
+            'workspace_id': workspace_id,
+            'user_id': user_id
+        }
         
         try:
-            # Reset file pointer for potential future use
-            await file.seek(0)
-            
-            # Get file size
-            file_content = await file.read()
-            file_size = len(file_content)
-            logger.debug(f"File size: {file_size} bytes")
-
-            # Ensure file is not closed before processing
-            await file.seek(0)
-            
-            # 2. Save file metadata to PostgreSQL using the service function
-            file_data = {
-                'filename': file.filename,
-                'file_path': result["stored_key"],
-                'file_size': file_size,
-                'content_type': file.content_type,
-                'workspace_id': workspace_id,
-                'user_id': user_id
-            }
-            
             file_record = await file_processing_service.save_file(db, file_data)
             logger.debug("File metadata saved to database")
         except Exception as db_error:
             logger.error(f"Error saving file to database: {str(db_error)}")
             # Continue with other operations even if database save fails
-            # We'll return a simplified response later
             file_record = None
         
         # 3. Process file in background for Pinecone indexing
@@ -84,15 +77,15 @@ async def upload_file(
             return {
                 "message": "File uploaded successfully",
                 "filename": file_record.filename,
-                "file_id": file_record.id,
-                "workspace_id": workspace_id,
+                "file_id": str(file_record.id),
+                "workspace_id": str(file_record.workspace_id),
                 "processing_status": "started"
             }
         else:
             return {
                 "message": "File uploaded successfully but metadata could not be saved",
                 "filename": file.filename,
-                "workspace_id": workspace_id,
+                "workspace_id": str(workspace_id),
                 "processing_status": "started"
             }
     except Exception as e:
@@ -113,11 +106,11 @@ async def list_files(
         files = db.query(FileModel).filter(FileModel.workspace_id == workspace_id).all()
         return [
             FileResponse(
-                id=file.id,
+                id=str(file.id),
                 filename=file.filename,
                 content_type=file.content_type,
                 file_size=file.file_size,
-                workspace_id=file.workspace_id,
+                workspace_id=str(file.workspace_id),
                 created_at=file.created_at
             )
             for file in files

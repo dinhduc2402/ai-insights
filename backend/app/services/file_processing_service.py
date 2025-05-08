@@ -35,15 +35,22 @@ class FileProcessingService:
         try:
             logger.debug(f"Saving file metadata to database: {file_data['filename']}")
             
+            # Generate ID as string
+            file_id = str(uuid.uuid4())
+            
+            # Ensure workspace_id is a string
+            workspace_id = str(file_data['workspace_id'])
+            user_id = str(file_data['user_id'])
+            
             # Create file record
             file_record = FileModel(
-                id=str(uuid.uuid4()),
+                id=file_id,
                 filename=file_data['filename'],
                 file_path=file_data['file_path'],
                 file_size=file_data['file_size'],
                 content_type=file_data['content_type'],
-                workspace_id=file_data['workspace_id'],
-                user_id=file_data['user_id']
+                workspace_id=workspace_id,
+                user_id=user_id
             )
             
             # Save to database
