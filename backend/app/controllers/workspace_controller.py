@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 @router.post("/", response_model=APIResponse[WorkspaceInDB])
 def create_workspace(workspace: WorkspaceCreate, db: Session = Depends(get_db)):
     # Generate workspace_id if not provided
-    if not workspace.workspace_id:
-        workspace.workspace_id = str(uuid.uuid4())
+    if not workspace.id:
+        workspace.id = str(uuid.uuid4())
     
     # Create new workspace
     db_workspace = Workspace(**workspace.model_dump())

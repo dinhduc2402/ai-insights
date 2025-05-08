@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
-from typing import List, Optional
+from typing import Optional
 from pydantic import BaseModel
 from ..services.assistant_service import assistant_service
 from ..services.file_processing_service import file_processing_service

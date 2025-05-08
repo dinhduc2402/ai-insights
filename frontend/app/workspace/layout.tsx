@@ -1,5 +1,5 @@
-import { Sidebar } from "@/components/workspace/sidebar"
-import { WorkspaceHeader } from "@/components/workspace/header"
+import { Sidebar } from "@/components/dashboard/job/sidebar"
+import { WorkspaceHeader } from "@/components/dashboard/job/header"
 
 interface WorkspaceLayoutProps {
      children: React.ReactNode

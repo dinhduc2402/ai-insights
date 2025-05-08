@@ -1,12 +1,10 @@
 import tempfile
 import logging
-from typing import List, Dict, Any
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from .r2_service import r2_service
 from .pinecone_service import pinecone_service
-from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +12,7 @@ class FileProcessingService:
     def __init__(self):
         self.embeddings = OpenAIEmbeddings()
 
-    async def process_file(self, workspace_name: str, file_key: str, index_name: str = "default-index"):
+    async def process_file(self, workspace_name: str, file_key: str):
         """Process a file from R2 and store its embeddings in Pinecone"""
         try:
             # Download file from R2

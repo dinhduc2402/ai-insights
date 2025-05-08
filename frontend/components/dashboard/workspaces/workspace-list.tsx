@@ -90,7 +90,7 @@ export function WorkspaceList() {
                                    </DropdownMenuTrigger>
                                    <DropdownMenuContent align="end">
                                         <DropdownMenuItem asChild>
-                                             <Link href={`/workspace/${workspace.id}`}>
+                                             <Link href={`/dashboard/workspaces/${workspace.id}`}>
                                                   <Settings className="mr-2 h-4 w-4" />
                                                   Open
                                              </Link>

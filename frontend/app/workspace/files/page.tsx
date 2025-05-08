@@ -1,4 +1,4 @@
-import { FileUpload } from "@/components/workspace/file-upload"
+import { FileUpload } from "@/components/dashboard/job/file-upload"
 import { api } from "@/lib/api"
 
 export default function FilesPage() {
