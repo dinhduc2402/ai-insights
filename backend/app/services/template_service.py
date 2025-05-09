@@ -15,13 +15,13 @@ class TemplateService:
             name=template.name,
             description=template.description,
             status=template.status,
-            llmModel=template.llmModel,
-            mainInstructions=template.mainInstructions,
-            businessDescription=template.businessDescription,
-            customerProfile=template.customerProfile,
-            rulesAndFilters=template.rulesAndFilters,
-            exampleOutputs=template.exampleOutputs,
-            guidanceOverride=template.guidanceOverride,
+            llm_model=template.llm_model,
+            main_instructions=template.main_instructions,
+            business_description=template.business_description,
+            customer_profile=template.customer_profile,
+            rules_and_filters=template.rules_and_filters,
+            example_outputs=template.example_outputs,
+            guidance_override=template.guidance_override,
             prompt=template.prompt
         )
         
@@ -43,7 +43,7 @@ class TemplateService:
         if workspace_id:
             query = query.filter(AITemplate.workspace_id == workspace_id)
             
-        return query.order_by(desc(AITemplate.updatedAt)).offset(skip).limit(limit).all()
+        return query.order_by(desc(AITemplate.updated_at)).offset(skip).limit(limit).all()
     
     def get_template(self, db: Session, template_id: UUID) -> Optional[AITemplate]:
         """Get a template by ID"""
@@ -88,13 +88,13 @@ class TemplateService:
             name=f"{original_template.name} (Copy)",
             description=original_template.description,
             status="draft",  # Always create copies as drafts
-            llmModel=original_template.llmModel,
-            mainInstructions=original_template.mainInstructions,
-            businessDescription=original_template.businessDescription,
-            customerProfile=original_template.customerProfile,
-            rulesAndFilters=original_template.rulesAndFilters,
-            exampleOutputs=original_template.exampleOutputs,
-            guidanceOverride=original_template.guidanceOverride,
+            llm_model=original_template.llm_model,
+            main_instructions=original_template.main_instructions,
+            business_description=original_template.business_description,
+            customer_profile=original_template.customer_profile,
+            rules_and_filters=original_template.rules_and_filters,
+            example_outputs=original_template.example_outputs,
+            guidance_override=original_template.guidance_override,
             prompt=original_template.prompt
         )
         

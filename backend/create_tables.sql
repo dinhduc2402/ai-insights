@@ -89,16 +89,16 @@ CREATE TABLE "public"."ai_templates" (
     name VARCHAR(255) NOT NULL,
     description text,
     status VARCHAR(20) DEFAULT 'draft' NOT NULL,
-    llmModel VARCHAR(100),
-    mainInstructions text,
-    businessDescription text,
-    customerProfile text,
-    rulesAndFilters text,
-    exampleOutputs text,
-    guidanceOverride text,
+    llm_model VARCHAR(100),
+    main_instructions text,
+    business_description text,
+    customer_profile text,
+    rules_and_filters text,
+    example_outputs text,
+    guidance_override text,
     prompt text,
-    createdAt timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updatedAt timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Create indexes for better performance

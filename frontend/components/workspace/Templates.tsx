@@ -8,11 +8,11 @@ interface Template {
      id: string
      name: string
      description: string
-     llmModel: string
-     mainInstructions: string
-     businessDescription: string
-     customerProfile: string
-     rulesAndFilters: string
+     llm_model: string
+     main_instructions: string
+     business_description: string
+     customer_profile: string
+     rules_and_filters: string
      workspace_id: string
      created_at: string
 }
