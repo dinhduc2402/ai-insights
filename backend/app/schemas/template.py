@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, UUID4
 from datetime import datetime
 import uuid
@@ -43,4 +43,17 @@ class TemplateListResponse(BaseModel):
     total: int
     
     class Config:
-        from_attributes = True 
+        from_attributes = True
+
+# Model for processing a workspace with a template
+class ProcessTemplateRequest(BaseModel):
+    workspace_id: UUID4
+    template_id: UUID4
+    user_input: Optional[str] = None
+    additional_context: Optional[Dict[str, Any]] = None
+    stream: bool = False
+
+class ProcessTemplateResponse(BaseModel):
+    id: str
+    result: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None 

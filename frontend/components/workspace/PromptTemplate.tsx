@@ -23,7 +23,7 @@ import {
 // Template data structure based on database schema
 interface PromptTemplate {
      id?: string
-     workspaceId: string
+     workspace_id: string
      name: string
      description: string
      status?: string
@@ -46,11 +46,11 @@ interface PromptTemplateProps {
 
 // Default template values
 const defaultTemplate: PromptTemplate = {
-     workspaceId: "",
+     workspace_id: "",
      name: "",
      description: "",
      status: "active",
-     llm_model: "gpt-4",
+     llm_model: "gpt-4o",
      main_instructions: "",
      business_description: "",
      customer_profile: "",
@@ -62,13 +62,15 @@ const defaultTemplate: PromptTemplate = {
 
 // Available AI models
 const aiModels = [
-     { id: "gpt-4", name: "GPT-4" },
      { id: "gpt-4o", name: "GPT-4o" },
-     { id: "gpt-3.5-turbo", name: "GPT-3.5 Turbo" },
-     { id: "claude-3-sonnet", name: "Claude 3 Sonnet" },
+     { id: "gpt-41", name: "GPT-4.1" },
+     { id: "claude-37-sonnet", name: "Claude 3.7 Sonnet" },
      { id: "claude-3-haiku", name: "Claude 3 Haiku" },
-     { id: "xai", name: "Grok 3" },
-     { id: "deepseek-coder", name: "DeepSeek R1" },
+     { id: "xai-3-beta", name: "xAI Grok 3 Beta" },
+     { id: "xai-3-fast-beta", name: "xAI Grok 3 Fast Beta" },
+     { id: "deepseek-r1", name: "DeepSeek R1" },
+     { id: "germini-25-pro", name: "Germini 2.5 Pro" },
+     { id: "sonar-pro", name: "Sonar Pro" },
 ]
 
 export function PromptTemplate({ trigger, workspaceId, templateId, onSuccess }: PromptTemplateProps) {
@@ -102,7 +104,7 @@ export function PromptTemplate({ trigger, workspaceId, templateId, onSuccess }: 
                // Set default template with current workspace ID
                setTemplate({
                     ...defaultTemplate,
-                    workspaceId: workspaceId
+                    workspace_id: workspaceId
                })
           }
      }, [templateId, workspaceId, isOpen])
@@ -203,9 +205,6 @@ export function PromptTemplate({ trigger, workspaceId, templateId, onSuccess }: 
                // Call success callback or navigate
                if (onSuccess) {
                     onSuccess()
-               } else {
-                    // Navigate to templates page
-                    router.push('/dashboard/templates')
                }
           } catch (error) {
                console.error("Error saving template:", error)

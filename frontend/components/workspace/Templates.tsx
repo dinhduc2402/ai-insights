@@ -82,16 +82,15 @@ export default function TemplatesList({ workspaceId, onRefresh }: TemplatesListP
      }
 
      return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
                {templates.map((template) => (
                     <div
                          key={template.id}
                          className="flex items-center justify-between bg-white rounded-md p-3 border border-gray-200 hover:border-gray-300 transition-colors"
                     >
-                         <div className="flex items-center gap-2">
-                              <div>
-                                   <span className="text-sm text-gray-700 block">{template.name}</span>
-                              </div>
+                         <div className="">
+                              <h2 className="text-gray-700 block text-lg font-bold">{template.name}</h2>
+                              <span className="text-gray-500 text-sm">{template.description}</span>
                          </div>
                          <Button
                               variant="ghost"

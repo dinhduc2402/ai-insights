@@ -3,7 +3,7 @@ import React from 'react';
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { api } from "@/lib/api";
-import { Bell, ChevronDown, MoreHorizontal, PaperclipIcon, SendIcon } from "lucide-react"
+import { Bell, ChevronDown, MoreHorizontal, SendIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -14,6 +14,7 @@ import { PromptEditDialog } from "@/components/workspace/PromptEditDialog"
 import { user_id } from '@/utils/data';
 import { PromptTemplate } from '@/components/workspace/PromptTemplate';
 import TemplatesList from '@/components/workspace/Templates';
+import { TemplateProcessor } from '@/components/workspace/TemplateProcessor';
 
 const WorkspacePage = () => {
      const params = useParams();
@@ -167,7 +168,13 @@ const WorkspacePage = () => {
                                                   content={inputMessage}
                                                   onSave={handlePromptSave}
                                              />
-                                             <PromptTemplate workspaceId={workspaceId} />
+                                             <PromptTemplate
+                                                  workspaceId={workspaceId}
+                                                  onSuccess={() => {
+                                                       setActiveTab("templates")
+                                                  }}
+                                             />
+                                             <TemplateProcessor workspaceId={workspaceId} />
                                         </div>
                                         <div className="flex items-center gap-2">
                                              <Popover>
