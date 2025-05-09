@@ -12,6 +12,7 @@ import AttachmentsList from "@/components/workspace/AttachmentsList";
 import FileUploader from "@/components/workspace/FileUploader";
 import { PromptEditDialog } from "@/components/workspace/PromptEditDialog"
 import { user_id } from '@/utils/data';
+import { PromptTemplate } from '@/components/workspace/PromptTemplate';
 
 const WorkspacePage = () => {
      const params = useParams();
@@ -165,6 +166,7 @@ const WorkspacePage = () => {
                                                   content={inputMessage}
                                                   onSave={handlePromptSave}
                                              />
+                                             <PromptTemplate />
                                         </div>
                                         <div className="flex items-center gap-2">
                                              <Popover>

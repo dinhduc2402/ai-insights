@@ -8,6 +8,7 @@ from .config.settings import settings
 from .controllers.workspace_controller import router as workspace_router
 from .controllers.file_controller import router as file_router
 from .controllers.assistant_controller import router as assistant_router
+from .controllers.template_controller import router as template_router
 
 # --- Langchain Basic Import Test ---
 try:
@@ -70,3 +71,4 @@ async def test_langchain_integration():
 app.include_router(workspace_router, prefix="/api/workspaces", tags=["Workspaces"])
 app.include_router(file_router, prefix="/api/files", tags=["Files"])
 app.include_router(assistant_router, prefix="/api/chat", tags=["Chat"])
+app.include_router(template_router, prefix="/api/templates", tags=["Templates"])
