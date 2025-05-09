@@ -18,6 +18,7 @@ import {
 
 // Template data structure based on database schema
 interface PromptTemplate {
+     workspaceId: string
      name: string
      description: string
      llmModel: string
@@ -31,13 +32,13 @@ interface PromptTemplate {
 }
 
 interface PromptTemplateProps {
-     template?: PromptTemplate
-     onSave: (template: PromptTemplate) => void
      trigger?: React.ReactNode
+     workspaceId: string
 }
 
 // Default template values
 const defaultTemplate: PromptTemplate = {
+     workspaceId: "",
      name: "",
      description: "",
      llmModel: "gpt-4",
@@ -61,14 +62,17 @@ const aiModels = [
      { id: "deepseek-coder", name: "DeepSeek R1" },
 ]
 
-export function PromptTemplate({ trigger }: PromptTemplateProps) {
+export function PromptTemplate({ trigger, workspaceId }: PromptTemplateProps) {
      const [isOpen, setIsOpen] = useState(false)
      const [template, setTemplate] = useState<PromptTemplate>(defaultTemplate)
      const [activeTab, setActiveTab] = useState("basic")
 
      // Update template when prop changes
      useEffect(() => {
-          setTemplate(defaultTemplate)
+          setTemplate({
+               ...defaultTemplate,
+               workspaceId: workspaceId
+          })
      }, [defaultTemplate])
 
      const handleChange = (field: keyof PromptTemplate, value: string) => {

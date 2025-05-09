@@ -13,6 +13,7 @@ import FileUploader from "@/components/workspace/FileUploader";
 import { PromptEditDialog } from "@/components/workspace/PromptEditDialog"
 import { user_id } from '@/utils/data';
 import { PromptTemplate } from '@/components/workspace/PromptTemplate';
+import TemplatesList from '@/components/workspace/Templates';
 
 const WorkspacePage = () => {
      const params = useParams();
@@ -166,7 +167,7 @@ const WorkspacePage = () => {
                                                   content={inputMessage}
                                                   onSave={handlePromptSave}
                                              />
-                                             <PromptTemplate />
+                                             <PromptTemplate workspaceId={workspaceId} />
                                         </div>
                                         <div className="flex items-center gap-2">
                                              <Popover>
@@ -235,6 +236,15 @@ const WorkspacePage = () => {
                                              >
                                                   Conversations
                                              </TabsTrigger>
+                                             <TabsTrigger
+                                                  value="templates"
+                                                  className={cn(
+                                                       "rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700",
+                                                       activeTab === "templates" && "border-purple-500 text-gray-900",
+                                                  )}
+                                             >
+                                                  Templates
+                                             </TabsTrigger>
                                         </TabsList>
                                    </div>
                                    <div className="flex justify-end mt-4">
@@ -274,6 +284,13 @@ const WorkspacePage = () => {
                                                   </div>
                                              </div>
                                         )}
+                                   </TabsContent>
+                                   <TabsContent value="templates" className="mt-4 flex-1">
+                                        <TemplatesList
+                                             workspaceId={workspaceId}
+                                             onRefresh={() => setActiveTab("templates")}
+                                             key={refreshKey}
+                                        />
                                    </TabsContent>
                               </Tabs>
                          </div>
