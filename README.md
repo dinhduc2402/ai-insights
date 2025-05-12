@@ -46,7 +46,7 @@ A powerful AI-powered insights platform that leverages multiple language models 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/ai-insights.git
+git clone https://github.com/dinhduc2402/ai-insights.git
 cd ai-insights
 ```
 
