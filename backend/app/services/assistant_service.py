@@ -5,6 +5,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_grok import ChatGrok
 from ..services.pinecone_service import pinecone_service
 from ..config.settings import settings
 
@@ -19,6 +20,7 @@ class AssistantService:
             "gpt-4o": self._create_openai_model("gpt-4o"),
             "claude-3-sonnet": self._create_anthropic_model("claude-3-sonnet"),
             "claude-3-opus": self._create_anthropic_model("claude-3-opus"),
+            "grok-3": self._create_grok_model("grok-3"),
         }
         
         self.default_model = "gpt-3.5-turbo"
@@ -50,7 +52,23 @@ class AssistantService:
             streaming=True,
             anthropic_api_key=settings.ANTHROPIC_API_KEY
         )
-        
+
+    def _create_grok_model(self, model_name: str):
+        """Create a Grok model instance"""
+        try:
+            return ChatGrok(
+                model_name=model_name,
+                temperature=0.7,
+                streaming=True,
+                grok_api_key=settings.GROK_API_KEY
+            )
+        except ImportError:
+            logger.error("Grok model dependencies not installed. Please install langchain-grok package.")
+            return None
+        except Exception as e:
+            logger.error(f"Error creating Grok model: {str(e)}")
+            return None
+
     def _get_model(self, model_name: str):
         """Get the appropriate model"""
         if model_name in self.models:

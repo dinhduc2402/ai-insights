@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # Anthropic Settings
     ANTHROPIC_API_KEY: Optional[str] = None
     
+    # Grok Settings
+    GROK_API_KEY: Optional[str] = None
+    
     class Config:
         case_sensitive = True
         env_file = ".env"
