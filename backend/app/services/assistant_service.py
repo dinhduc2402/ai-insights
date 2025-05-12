@@ -5,7 +5,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_grok import ChatGrok
+from langchain_xai import ChatXAI
 from ..services.pinecone_service import pinecone_service
 from ..config.settings import settings
 
@@ -54,17 +54,17 @@ class AssistantService:
         )
 
     def _create_grok_model(self, model_name: str):
-        """Create a Grok model instance"""
+        """Create a Grok model instance using ChatXAI"""
         try:
-            return ChatGrok(
-                model_name=model_name,
+            return ChatXAI(
+                model=model_name,
                 temperature=0.7,
-                streaming=True,
-                grok_api_key=settings.GROK_API_KEY
+                max_tokens=None,  # Let the model decide based on context
+                timeout=None,  # Use default timeout
+                max_retries=2,
+                api_key=settings.GROK_API_KEY,
+                streaming=True
             )
-        except ImportError:
-            logger.error("Grok model dependencies not installed. Please install langchain-grok package.")
-            return None
         except Exception as e:
             logger.error(f"Error creating Grok model: {str(e)}")
             return None
